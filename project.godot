@@ -1,0 +1,6 @@
+[application]
+config/name="Ciudad Isometrica"
+config/description="Proyecto base para un juego de ciudad isométrica estilo IsoCity en Godot 4"
+config/author=""
+config/version="0.1"
+run/main_scene="res://Main.tscn"
