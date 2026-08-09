@@ -17,6 +17,9 @@ func _ready() -> void:
     _reset_tile_map()
     update()
 
+func _process(delta: float) -> void:
+    update()
+
 func _reset_tile_map() -> void:
     tile_map.resize(GRID_SIZE)
     for x in range(GRID_SIZE):
@@ -26,7 +29,7 @@ func _reset_tile_map() -> void:
             tile_map[x][y] = TILE_EMPTY
 
 func _input(event: InputEvent) -> void:
-    if event is InputEventMouseButton and event.pressed and event.button_index == MouseButton.LEFT:
+    if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
         _select_cell(event.position)
     elif event is InputEventScreenTouch and event.pressed:
         _select_cell(event.position)
@@ -70,7 +73,7 @@ func _get_tile_colors(tile_type: int) -> Dictionary:
         TILE_INDUSTRIAL:
             return {"fill": Color(0.95, 0.8, 0.2, 0.35), "outline": Color(0.8, 0.65, 0.1, 0.9)}
         _:
-            return null
+            return {}
 
 func _draw_tile_cell(cell: Vector2, fill_color: Color, outline_color: Color) -> void:
     var top = map_to_iso(cell)
