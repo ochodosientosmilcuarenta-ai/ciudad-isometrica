@@ -15,10 +15,10 @@ var build_mode: int = TILE_ROAD
 
 func _ready() -> void:
     _reset_tile_map()
-    update()
+    queue_redraw()
 
 func _process(delta: float) -> void:
-    update()
+    queue_redraw()
 
 func _reset_tile_map() -> void:
     tile_map.resize(GRID_SIZE)
@@ -59,7 +59,7 @@ func draw_tiles() -> void:
             var tile_type = tile_map[x][y]
             if tile_type != TILE_EMPTY:
                 var colors = _get_tile_colors(tile_type)
-                if colors:
+                if colors.size() > 0:
                     _draw_tile_cell(Vector2(x, y), colors.fill, colors.outline)
 
 func _get_tile_colors(tile_type: int) -> Dictionary:
@@ -110,7 +110,7 @@ func _select_cell(screen_pos: Vector2) -> void:
     else:
         selected_cell = Vector2(-1, -1)
 
-    update()
+    queue_redraw()
 
 func _on_RoadButton_pressed() -> void:
     build_mode = TILE_ROAD
