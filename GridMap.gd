@@ -121,7 +121,7 @@ func _select_cell(global_pos: Vector2) -> void:
 
 
 func _ensure_hud_buttons_connected() -> void:
-    var base = "HUD/Panel/HBoxContainer"
+    var base = "Camera2D/HUD/Panel/HBoxContainer"
     var mapping = {
         "RoadButton": "_on_RoadButton_pressed",
         "ResidentialButton": "_on_ResidentialButton_pressed",

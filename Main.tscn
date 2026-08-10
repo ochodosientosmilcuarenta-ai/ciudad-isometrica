@@ -9,23 +9,24 @@ script = ExtResource(1)
 current = true
 position = Vector2(320, 240)
 
-[node name="HUD" type="CanvasLayer" parent="."]
+[node name="HUD" type="CanvasLayer" parent="Camera2D"]
 
-[node name="Panel" type="Panel" parent="HUD"]
+[node name="Panel" type="Panel" parent="Camera2D/HUD"]
 rect_position = Vector2(16, 16)
 rect_size = Vector2(520, 56)
 
-[node name="HBoxContainer" type="HBoxContainer" parent="Panel"]
-custom_constants/separation = 8.0
+[node name="HBoxContainer" type="HBoxContainer" parent="Camera2D/HUD/Panel"]
+custom_constants/separation = 10.0
+alignment = 1
 
-[node name="RoadButton" type="Button" parent="Panel/HBoxContainer"]
-text = "RoadButton"
+[node name="RoadButton" type="Button" parent="Camera2D/HUD/Panel/HBoxContainer"]
+text = "Carretera"
 
-[node name="ResidentialButton" type="Button" parent="Panel/HBoxContainer"]
-text = "ResidentialButton"
+[node name="ResidentialButton" type="Button" parent="Camera2D/HUD/Panel/HBoxContainer"]
+text = "Residencial"
 
-[node name="CommercialButton" type="Button" parent="Panel/HBoxContainer"]
-text = "CommercialButton"
+[node name="CommercialButton" type="Button" parent="Camera2D/HUD/Panel/HBoxContainer"]
+text = "Comercial"
 
-[node name="IndustrialButton" type="Button" parent="Panel/HBoxContainer"]
-text = "IndustrialButton"
+[node name="IndustrialButton" type="Button" parent="Camera2D/HUD/Panel/HBoxContainer"]
+text = "Industrial"
