@@ -124,8 +124,8 @@ func _select_cell(global_pos: Vector2) -> void:
 
 
 func _ensure_hud_buttons_connected() -> void:
-    var base := "HUD/Panel/HBoxContainer"
-    var mapping := {
+    var base = "HUD/Panel/HBoxContainer"
+    var mapping = {
         "RoadButton": "_on_RoadButton_pressed",
         "ResidentialButton": "_on_ResidentialButton_pressed",
         "CommercialButton": "_on_CommercialButton_pressed",
@@ -133,11 +133,11 @@ func _ensure_hud_buttons_connected() -> void:
     }
 
     for name in mapping.keys():
-        var path := base + "/" + name
+        var path = base + "/" + name
         if has_node(path):
             var btn = get_node(path)
             var method_name = mapping[name]
-            if not btn.is_connected("pressed", self, method_name):
+            if not btn.is_connected("pressed", Callable(self, method_name)):
                 btn.connect("pressed", Callable(self, method_name))
 
 func _on_RoadButton_pressed() -> void:
