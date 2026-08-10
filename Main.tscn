@@ -13,24 +13,19 @@ position = Vector2(320, 240)
 
 [node name="Panel" type="Panel" parent="HUD"]
 rect_position = Vector2(16, 16)
-rect_size = Vector2(480, 48)
+rect_size = Vector2(520, 56)
 
 [node name="HBoxContainer" type="HBoxContainer" parent="Panel"]
 custom_constants/separation = 8.0
 
 [node name="RoadButton" type="Button" parent="Panel/HBoxContainer"]
-text = "Carretera"
+text = "RoadButton"
 
 [node name="ResidentialButton" type="Button" parent="Panel/HBoxContainer"]
-text = "Residencial"
+text = "ResidentialButton"
 
 [node name="CommercialButton" type="Button" parent="Panel/HBoxContainer"]
-text = "Comercial"
+text = "CommercialButton"
 
 [node name="IndustrialButton" type="Button" parent="Panel/HBoxContainer"]
-text = "Industrial"
-
-[connection signal="pressed" from="Panel/HBoxContainer/RoadButton" to="." method="_on_RoadButton_pressed"]
-[connection signal="pressed" from="Panel/HBoxContainer/ResidentialButton" to="." method="_on_ResidentialButton_pressed"]
-[connection signal="pressed" from="Panel/HBoxContainer/CommercialButton" to="." method="_on_CommercialButton_pressed"]
-[connection signal="pressed" from="Panel/HBoxContainer/IndustrialButton" to="." method="_on_IndustrialButton_pressed"]
+text = "IndustrialButton"
