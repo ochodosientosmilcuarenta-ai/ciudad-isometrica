@@ -15,9 +15,10 @@ var build_mode: int = TILE_ROAD
 
 func _ready() -> void:
     _reset_tile_map()
+    _ensure_hud_buttons_connected()
     queue_redraw()
 
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
     queue_redraw()
 
 func _reset_tile_map() -> void:
@@ -29,10 +30,19 @@ func _reset_tile_map() -> void:
             tile_map[x][y] = TILE_EMPTY
 
 func _input(event: InputEvent) -> void:
-    if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
-        _select_cell(event.position)
-    elif event is InputEventScreenTouch and event.pressed:
-        _select_cell(event.position)
+    if event is InputEventMouseButton:
+        if event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+            var global_pos: Vector2 = get_global_mouse_position()
+            _select_cell(global_pos)
+    elif event is InputEventScreenTouch:
+        if event.pressed:
+            var cam = get_viewport().get_camera_2d()
+            var global_pos: Vector2
+            if cam:
+                global_pos = cam.unproject_position(event.position)
+            else:
+                global_pos = event.position
+            _select_cell(global_pos)
 
 func _draw() -> void:
     draw_tiles()
@@ -99,8 +109,8 @@ func draw_selection() -> void:
     draw_colored_polygon(polygon, Color(0.0, 0.7, 1.0, 0.25))
     draw_polyline(polygon + [top], Color(0.0, 0.7, 1.0, 0.8), 2.0)
 
-func _select_cell(screen_pos: Vector2) -> void:
-    var local_pos = to_local(screen_pos)
+func _select_cell(global_pos: Vector2) -> void:
+    var local_pos = to_local(global_pos)
     var iso_pos = screen_to_iso(local_pos)
     var cell = Vector2(floor(iso_pos.x), floor(iso_pos.y))
 
@@ -111,6 +121,24 @@ func _select_cell(screen_pos: Vector2) -> void:
         selected_cell = Vector2(-1, -1)
 
     queue_redraw()
+
+
+func _ensure_hud_buttons_connected() -> void:
+    var base := "HUD/Panel/HBoxContainer"
+    var mapping := {
+        "RoadButton": "_on_RoadButton_pressed",
+        "ResidentialButton": "_on_ResidentialButton_pressed",
+        "CommercialButton": "_on_CommercialButton_pressed",
+        "IndustrialButton": "_on_IndustrialButton_pressed",
+    }
+
+    for name in mapping.keys():
+        var path := base + "/" + name
+        if has_node(path):
+            var btn = get_node(path)
+            var method_name = mapping[name]
+            if not btn.is_connected("pressed", self, method_name):
+                btn.connect("pressed", Callable(self, method_name))
 
 func _on_RoadButton_pressed() -> void:
     build_mode = TILE_ROAD
