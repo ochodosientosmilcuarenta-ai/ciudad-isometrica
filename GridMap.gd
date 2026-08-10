@@ -36,12 +36,9 @@ func _input(event: InputEvent) -> void:
             _select_cell(global_pos)
     elif event is InputEventScreenTouch:
         if event.pressed:
-            var cam = get_viewport().get_camera_2d()
-            var global_pos: Vector2
-            if cam:
-                global_pos = cam.unproject_position(event.position)
-            else:
-                global_pos = event.position
+            # Use global mouse position for touch as well and transform
+            # to the node's local space inside _select_cell.
+            var global_pos: Vector2 = get_global_mouse_position()
             _select_cell(global_pos)
 
 func _draw() -> void:
@@ -132,11 +129,11 @@ func _ensure_hud_buttons_connected() -> void:
         "IndustrialButton": "_on_IndustrialButton_pressed",
     }
 
-    for name in mapping.keys():
-        var path = base + "/" + name
+    for btn_name in mapping.keys():
+        var path = base + "/" + btn_name
         if has_node(path):
             var btn = get_node(path)
-            var method_name = mapping[name]
+            var method_name = mapping[btn_name]
             if not btn.is_connected("pressed", Callable(self, method_name)):
                 btn.connect("pressed", Callable(self, method_name))
 
