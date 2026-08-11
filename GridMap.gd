@@ -3,6 +3,7 @@ extends Node2D
 const GRID_SIZE := 10
 const TILE_SIZE := Vector2(64, 32)
 const HALF_TILE := TILE_SIZE * 0.5
+const TILESET_TILE_COUNT := 5
 const TILE_EMPTY := 0
 const TILE_ROAD := 1
 const TILE_RESIDENTIAL := 2
@@ -13,6 +14,7 @@ var tile_map: Array = []
 var tileset_texture: Texture2D
 var tileset_region_width: float = 0.0
 var tileset_region_height: float = 0.0
+var tileset_regions: Array = []
 var selected_cell: Vector2 = Vector2(-1, -1)
 var build_mode: int = TILE_ROAD
 
@@ -34,13 +36,18 @@ func _reset_tile_map() -> void:
             tile_map[x][y] = TILE_EMPTY
 
 func _load_tileset() -> void:
-    tileset_texture = load("res://tileset.png") as Texture2D
-    if tileset_texture:
-        var size = tileset_texture.get_size()
-        tileset_region_width = size.x / 5.0
-        tileset_region_height = size.y
+    var path = "res://tileset.png"
+    if ResourceLoader.exists(path):
+        tileset_texture = load(path) as Texture2D
+        if tileset_texture:
+            var size = tileset_texture.get_size()
+            tileset_region_width = size.x / float(TILESET_TILE_COUNT)
+            tileset_region_height = size.y
+            _build_tileset_regions()
+        else:
+            push_error("No se pudo cargar la textura de tileset desde %s" % path)
     else:
-        push_error("No se pudo cargar res://tileset.png")
+        push_error("No existe el recurso %s" % path)
 
 func _input(event: InputEvent) -> void:
     if event is InputEventMouseButton:
@@ -84,8 +91,15 @@ func draw_tiles() -> void:
                 _draw_tile_cell(Vector2(x, y), tile_type)
 
 func _get_tile_region(tile_type: int) -> Rect2:
-    var region_index = tile_type
-    return Rect2(region_index * tileset_region_width, 0.0, tileset_region_width, tileset_region_height)
+    var region_index = clamp(tile_type, 0, TILESET_TILE_COUNT - 1)
+    if region_index >= 0 and region_index < tileset_regions.size():
+        return tileset_regions[region_index]
+    return Rect2()
+
+func _build_tileset_regions() -> void:
+    tileset_regions.clear()
+    for i in range(TILESET_TILE_COUNT):
+        tileset_regions.append(Rect2(i * tileset_region_width, 0.0, tileset_region_width, tileset_region_height))
 
 func _draw_tile_cell(cell: Vector2, tile_type: int) -> void:
     var top = map_to_iso(cell)
