@@ -10,10 +10,14 @@ const TILE_COMMERCIAL := 3
 const TILE_INDUSTRIAL := 4
 
 var tile_map: Array = []
+var tileset_texture: Texture2D
+var tileset_region_width: float = 0.0
+var tileset_region_height: float = 0.0
 var selected_cell: Vector2 = Vector2(-1, -1)
 var build_mode: int = TILE_ROAD
 
 func _ready() -> void:
+    _load_tileset()
     _reset_tile_map()
     _ensure_hud_buttons_connected()
     queue_redraw()
@@ -28,6 +32,15 @@ func _reset_tile_map() -> void:
         tile_map[x].resize(GRID_SIZE)
         for y in range(GRID_SIZE):
             tile_map[x][y] = TILE_EMPTY
+
+func _load_tileset() -> void:
+    tileset_texture = load("res://tileset.png") as Texture2D
+    if tileset_texture:
+        var size = tileset_texture.get_size()
+        tileset_region_width = size.x / 5.0
+        tileset_region_height = size.y
+    else:
+        push_error("No se pudo cargar res://tileset.png")
 
 func _input(event: InputEvent) -> void:
     if event is InputEventMouseButton:
@@ -61,35 +74,25 @@ func draw_grid() -> void:
         draw_line(start, end, line_color, thickness)
 
 func draw_tiles() -> void:
+    if not tileset_texture:
+        return
+
     for x in range(GRID_SIZE):
         for y in range(GRID_SIZE):
             var tile_type = tile_map[x][y]
             if tile_type != TILE_EMPTY:
-                var colors = _get_tile_colors(tile_type)
-                if colors.size() > 0:
-                    _draw_tile_cell(Vector2(x, y), colors.fill, colors.outline)
+                _draw_tile_cell(Vector2(x, y), tile_type)
 
-func _get_tile_colors(tile_type: int) -> Dictionary:
-    match tile_type:
-        TILE_ROAD:
-            return {"fill": Color(0.2, 0.2, 0.2, 0.75), "outline": Color(0.8, 0.7, 0.4, 0.9)}
-        TILE_RESIDENTIAL:
-            return {"fill": Color(0.2, 0.8, 0.2, 0.35), "outline": Color(0.1, 0.6, 0.1, 0.9)}
-        TILE_COMMERCIAL:
-            return {"fill": Color(0.2, 0.5, 1.0, 0.35), "outline": Color(0.1, 0.3, 0.8, 0.9)}
-        TILE_INDUSTRIAL:
-            return {"fill": Color(0.95, 0.8, 0.2, 0.35), "outline": Color(0.8, 0.65, 0.1, 0.9)}
-        _:
-            return {}
+func _get_tile_region(tile_type: int) -> Rect2:
+    var region_index = tile_type
+    return Rect2(region_index * tileset_region_width, 0.0, tileset_region_width, tileset_region_height)
 
-func _draw_tile_cell(cell: Vector2, fill_color: Color, outline_color: Color) -> void:
+func _draw_tile_cell(cell: Vector2, tile_type: int) -> void:
     var top = map_to_iso(cell)
-    var right = map_to_iso(cell + Vector2(1, 0))
-    var bottom = map_to_iso(cell + Vector2(1, 1))
-    var left = map_to_iso(cell + Vector2(0, 1))
-    var polygon = [top, right, bottom, left]
-    draw_colored_polygon(polygon, fill_color)
-    draw_polyline(polygon + [top], outline_color, 2.0)
+    var tile_region = _get_tile_region(tile_type)
+    var dest_size = Vector2(tileset_region_width, tileset_region_height)
+    var dest_position = top - Vector2(dest_size.x * 0.5, dest_size.y - HALF_TILE.y)
+    draw_texture_rect_region(tileset_texture, Rect2(dest_position, dest_size), tile_region)
 
 func draw_selection() -> void:
     if selected_cell.x < 0 or selected_cell.y < 0:
